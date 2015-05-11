@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Foo</title>
+<meta charset='utf-8' />
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' />
+<style type='text/css'>
+body {
+  font-family: 'Helvetica';
+  letter-spacing:-5px;
+  background:#000;
+  background-size:100%;
+  color:#fff;
+  margin:0;
+  padding:0;
+  font-weight:bold;
+}
+
+h1, h2, h3, p {
+  margin:0;
+}
+
+em, a {
+  font-style:normal;
+  color:#8dbd0c;
+}
+
+a {
+  background: #34d0e7;
+  color:#000;
+  text-decoration:none;
+}
+
+img {
+  width:100%;
+}
+
+div {
+  cursor:pointer;
+  cursor:hand;
+  position:absolute;
+  top:0;
+  left:0;
+}
+
+</style>
+<script type='text/javascript'>
+window.onload = function() {
+    var s = document.getElementsByTagName('div'), cur = 0, ti;
+    if (!s) return;
+    function go(n) {
+        cur = n;
+        var i = 1e3, e = s[n], t;
+        document.body.className = e.dataset.bodyclass || '';
+        for (var k = 0; k < s.length; k++) s[k].style.display = 'none';
+        e.style.display = 'inline';
+        e.style.fontSize = i + 'px';
+        if (e.firstChild && e.firstChild.nodeName === 'IMG') {
+            document.body.style.backgroundImage = 'url(' + e.firstChild.src + ')';
+            e.firstChild.style.display = 'none';
+            if ('classList' in e) e.classList.add('imageText');
+        } else {
+            document.body.style.backgroundImage = '';
+            document.body.style.backgroundColor = e.style.backgroundColor;
+        }
+        if (ti !== undefined) window.clearInterval(ti);
+        t = parseInt(e.dataset.timeToNext || 0, 10);
+        if (t > 0) ti = window.setTimeout(fwd, (t * 1000));
+        while (
+            e.offsetWidth > window.innerWidth ||
+            e.offsetHeight > window.innerHeight) {
+            e.style.fontSize = (i -= 2) + 'px';
+            if (i < 0) break;
+        }
+        e.style.marginTop = ((window.innerHeight - e.offsetHeight) / 2) + 'px';
+        if (window.location.hash !== n) window.location.hash = n;
+        document.title = e.textContent || e.innerText;
+    }
+    document.onclick = function() { go(++cur % (s.length)); };
+    function fwd() { go(Math.min(s.length - 1, ++cur)); }
+    function rev() { go(Math.max(0, --cur)); }
+    document.onkeydown = function(e) {
+        if (e.which === 39 || e.which === 34 || e.which === 40) fwd();
+        if (e.which === 37 || e.which === 33 || e.which === 38) rev();
+    };
+    document.ontouchstart = function(e) {
+        var x0 = e.changedTouches[0].pageX;
+        document.ontouchend = function(e) {
+            var x1 = e.changedTouches[0].pageX;
+            if (x1 - x0 < 0) fwd();
+            if (x1 - x0 > 0) rev();
+        };
+    };
+    function parse_hash() {
+        return Math.max(Math.min(
+            s.length - 1,
+            parseInt(window.location.hash.substring(1), 10)), 0);
+    }
+    if (window.location.hash) cur = parse_hash() || cur;
+    window.onhashchange = function() {
+        var c = parse_hash();
+        if (c !== cur) go(c);
+    };
+    go(cur);
+};
+</script></head><body>
+<div><h2 id="an-introduction-to-your-gis-problems">An Introduction To Your GIS Problems</h2>
+<p>By: Blake Thompson</p>
+</div>
+<div><p>&quot;Blake my GIS application is slow!&quot;</p>
+</div>
+<div><p>&quot;Blake my data doesn&#39;t render properly!&quot;</p>
+</div>
+<div><p>It is probably <em>your fault</em>.</p>
+</div>
+<div><p>There is no magic bullet in GIS.</p>
+</div>
+<div><p>If you running slow you are likey:</p>
+<ul>
+<li>Using wrong technology</li>
+<li>Using technology wrong</li>
+<li>Too much data</li>
+<li>Bad data</li>
+</ul>
+</div>
+<div><p>... or you are being too cheap</p>
+</div>
+<div><p>Types of GIS Data:
+(skipping rasters)</p>
+</div>
+<div><p><img src="img/a0fd3852-f7c6-11e4-8251-ce8b894b060e.png" alt="Points">
+Points</p>
+</div>
+<div><p>Stored as:</p>
+<p>X, Y</p>
+</div>
+<div><p><img src="img/2dc8ddd6-f7c7-11e4-9963-c5c2572b9196.png" alt="Lines">
+Lines</p>
+</div>
+<div><p>Stored as:</p>
+<p>Array of Xs, Ys</p>
+</div>
+<div><p>Lines have a direction.</p>
+</div>
+<div><p><img src="img/a24894bc-f7c7-11e4-958f-f2e16d544d68.png" alt="Polygons">
+Polygons</p>
+</div>
+<div><p>Stored as:</p>
+<p>Array of Xs, Ys</p>
+<p>or an:</p>
+<p>Array of Arrays of Xs, Ys</p>
+</div>
+<div><p>Polygons are:</p>
+<ul>
+<li>Closed</li>
+<li>Have Winding Order</li>
+</ul>
+</div>
+<div><p>Implicity Closed:</p>
+<ul>
+<li><em>[[1,1],[1,2],[2,2]]</em></li>
+</ul>
+</div>
+<div><p>Explicitly Closed:</p>
+<ul>
+<li>[[1,1],[1,2],[2,2],<em>[1,1]</em>]</li>
+</ul>
+</div>
+<div><p>Closing Type Depends on Data Format and System</p>
+</div>
+<div><p>Closing is common bug when importing data into a system</p>
+</div>
+<div><p>Winding order is the direction the path travels</p>
+</div>
+<div><p>Is determined by <a href="http://en.wikipedia.org/wiki/Curve_orientation">Curve Orientation</a></p>
+</div>
+<div><p>Positive Curve Orientation is Counter Clockwise <em>UNLESS</em>
+your positive Y-axis is downward, then it is Clockwise</p>
+</div>
+<div><p>Negative Curve Orientation is Clockwise <em>UNLESS</em>
+your positive Y-axis is downward, then it is Counter Clockwise.</p>
+</div>
+<div><p>Polygons can have holes!</p>
+</div>
+<div><p><img src="img/7cc28ffe-f7cc-11e4-955d-c903cf7738f7.png" alt="image"></p>
+</div>
+<div><p>Holes are determined by Counting Curve Orientations!</p>
+</div>
+<div><p><img src="img/de7bc206-f7cc-11e4-90a7-8d70ed9f0569.png" alt="image"></p>
+</div>
+<div><p>Ways of Determining Where a Polygon Fills:</p>
+</div>
+<div><p><img src="img/8e1dd4ec-f7cd-11e4-80e8-33123a7402a3.png" alt="image">
+Even Odd</p>
+</div>
+<div><p><img src="img/a81f6324-f7cd-11e4-930c-a2f163b663c7.png" alt="image">
+Non Zero</p>
+</div>
+<div><p><img src="img/bf223998-f7cd-11e4-8ba9-a3155c72e411.png" alt="image">
+Positive</p>
+</div>
+<div><p><img src="img/4a4bf4ec-f7cd-11e4-8764-035665312db6.png" alt="">
+Negative Fill</p>
+</div>
+<div><p>Invalid Polygons:</p>
+<ul>
+<li>Self Intersecting (any lines cross)</li>
+<li>Not-Closed</li>
+</ul>
+</div>
+<div><p>Multi-points, Multi-lines, Multi-polygons are collections
+of their base type all tagged with the same data</p>
+</div>
+<div><p>Most of the problems with rendering have something to do with the problems described above. Typically in <em>your data</em>.</p>
+</div>
+<div><p>How do we find, our data? Spatial Indexes.</p>
+</div>
+<div><p>Step 1: Find Envelope of Geometry</p>
+</div>
+<div><p><img src="img/1dabddbe-f7d0-11e4-9c11-c67808e56261.png" alt="image"></p>
+</div>
+<div><p>Step 2: Make a Tree Structure</p>
+</div>
+<div><p>How? Organize the tree by making envelopes of your envelopes.</p>
+</div>
+<div><p><img src="img/a30f37f8-f7d0-11e4-8f7f-2382b2aafe7f.png" alt="image"></p>
+</div>
+<div><p>&quot;Blake, I have a spatial index, but its still slow!&quot;</p>
+</div>
+<div><p>Once you narrow down to a section of a tree, you still must iterate through EVERY point. Including every point in your line or polygon.</p>
+</div>
+<div><p>Likely Causes that you are slow.</p>
+</div>
+<div><p>Far too detailed polygons. Taking forever to find intersections. </p>
+</div>
+<div><p>Including polygons with tons of holes!</p>
+</div>
+<div><p>Lots of polygons that overlap. Cause Big Tree Branches.</p>
+</div>
+<div><p>Multipolygon, multilines, or multipoints! They have 1 envelope!</p>
+</div>
+<div><p>You have too much data! Break out your geometry data first by some other metric (often time or space).</p>
+</div>
+<div><p>Breaking out data into different space is the magic of Vector Tiles.</p>
+</div>
+<div><p><em>Expect Gotchas!</em></p>
+</div>
+<div><p>Don&#39;t expect one solution to solve everything for you.</p>
+</div>
+<div><p>Breaking out detailed data into Vector Tiles might make display easier, but may not solve your Nearest Neighbor problem.</p>
+</div>
+<div><p>Final Thought - Stop doing this:</p>
+</div>
+<div><p><img src="img/df81a0fc-f7d2-11e4-909e-3265ff6872fa.png" alt="image"></p>
+</div>
